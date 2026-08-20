@@ -4,11 +4,14 @@ function Menu() {
     const [menu, setMenu] = useState([]);
     const [menuName, setMenuName] = useState("");
     const [price, setPrice] = useState("");
+
     const [categories, setCategories] = useState([]);
     const [categoryId, setCategoryId] = useState("");
 
     const [quantities, setQuantities] = useState([]);
     const [quantityId, setQuantityId] = useState("");
+
+    const [updateId, setUpdateId] = useState("");
 
     
 
@@ -19,6 +22,36 @@ function Menu() {
         .then(data => {
             setMenu(data);
         });
+}
+
+function loadMenu() {
+    fetch(`http://localhost:3000/menu/${updateId}`)
+        .then(response => response.json())
+        .then(data => {
+            setMenuName(data.menu_name);
+            setPrice(data.price);
+            setCategoryId(data.category_id);
+            setQuantityId(data.quantity_id);
+        });
+}
+
+function updateMenu() {
+    fetch(`http://localhost:3000/menu/${updateId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            menu_name: menuName,
+            price: price,
+            category_id: categoryId,
+            quantity_id: quantityId
+        })
+    })
+    .then(response => response.json())
+    .then(() => {
+        getMenu();
+    });
 }
 
 const handleSubmit = (e) => {
@@ -112,6 +145,18 @@ const handleSubmit = (e) => {
 
     <button type="submit">Add Menu</button>
 </form>
+<input
+    type="number"
+    placeholder="Enter Menu ID to Update"
+    value={updateId}
+    onChange={(e) => setUpdateId(e.target.value)}
+/>
+<button type="button" onClick={loadMenu}>
+    Load Menu
+</button>
+<button type="button" onClick={updateMenu}>
+    Update Menu
+</button>
             <h1>Menu</h1>
 
             {menu.map(item => (
