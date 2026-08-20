@@ -13,6 +13,10 @@ function Menu() {
 
     const [updateId, setUpdateId] = useState("");
 
+    const [deleteId, setDeleteId] = useState("");
+
+
+
     
 
 
@@ -51,6 +55,17 @@ function updateMenu() {
     .then(response => response.json())
     .then(() => {
         getMenu();
+    });
+}
+
+function deleteMenu() {
+    fetch(`http://localhost:3000/menu/${deleteId}`, {
+        method: "DELETE"
+    })
+    .then(response => response.json())
+    .then(() => {
+        getMenu();
+        setDeleteId("");
     });
 }
 
@@ -157,6 +172,17 @@ const handleSubmit = (e) => {
 <button type="button" onClick={updateMenu}>
     Update Menu
 </button>
+<input
+    type="number"
+    placeholder="Enter Menu ID to Delete"
+    value={deleteId}
+    onChange={(e) => setDeleteId(e.target.value)}
+/>
+<button type="button" onClick={deleteMenu}>
+    Delete Menu
+</button>
+
+
             <h1>Menu</h1>
 
             {menu.map(item => (
