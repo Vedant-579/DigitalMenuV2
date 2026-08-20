@@ -1,12 +1,9 @@
-import Menu from "./Menu"
+import Menu from "./Menu";
 
 function App() {
-  return (
-    <>
-      <h1>Digital Menu</h1>
-      <Menu />
-    </>
-  )
+    return (
+        <Menu />
+    );
 }
 
-export default App
+export default App;

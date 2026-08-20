@@ -1,7 +1,10 @@
 const express = require("express");
+const cors = require("cors");
 const pool = require("./db");
 
 const app = express();
+
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -59,6 +62,22 @@ app.delete("/menu/:id", async (req, res) => {
 
     res.json(result.rows[0]);
 });
+
+app.get("/categories", async (req, res) => {
+    const result = await pool.query(
+        "SELECT * FROM food_categories"
+    );
+
+    res.json(result.rows);
+});
+
+app.get("/quantities", async(req, res)=>{
+  const result = await pool.query(
+    "SELECt * FROM quantities"
+  );
+
+  res.json(result.rows);
+})
 
 
 app.listen(3000, () => {
