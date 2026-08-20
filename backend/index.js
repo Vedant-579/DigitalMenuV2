@@ -12,7 +12,19 @@ app.get("/", (req, res) => {
 });
 
 app.get("/menu", async (req, res) => {
-    const result = await pool.query("SELECT * FROM menu");
+    const result = await pool.query(`
+    SELECT
+        menu.id,
+        menu.menu_name,
+        menu.price,
+        food_categories.category_name,
+        quantities.size
+    FROM menu
+    JOIN food_categories
+        ON menu.category_id = food_categories.id
+    JOIN quantities
+        ON menu.quantity_id = quantities.id
+`);
     res.json(result.rows);
 });
 

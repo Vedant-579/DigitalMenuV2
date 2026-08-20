@@ -189,6 +189,8 @@ const handleSubmit = (e) => {
                 <div key={item.id}>
                     <h3>{item.menu_name}</h3>
                     <p>₹{item.price}</p>
+                    <p>{item.category_name}</p>
+                    <p>{item.size}</p>
                 </div>
             ))}
         </div>
