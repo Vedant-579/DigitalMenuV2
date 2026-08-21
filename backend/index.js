@@ -12,11 +12,12 @@ app.get("/", (req, res) => {
 });
 
 app.get("/menu", async (req, res) => {
-    const result = await pool.query(`
+  const result = await pool.query(`
     SELECT
         menu.id,
         menu.menu_name,
         menu.price,
+        menu.image_url,
         food_categories.category_name,
         quantities.size
     FROM menu
@@ -40,15 +41,14 @@ app.get("/menu/:id", async (req, res) => {
 });
 
 app.post("/menu", async (req, res) => {
-
-    const { menu_name, price, category_id, quantity_id } = req.body;
+    const { menu_name, price, category_id, quantity_id, image_url } = req.body;
 
     const result = await pool.query(
         `INSERT INTO menu
-        (menu_name, price, category_id, quantity_id)
-        VALUES ($1, $2, $3, $4)
+        (menu_name, price, category_id, quantity_id, image_url)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING *`,
-        [menu_name, price, category_id, quantity_id]
+        [menu_name, price, category_id, quantity_id, image_url]
     );
 
     res.status(201).json(result.rows[0]);
@@ -56,17 +56,18 @@ app.post("/menu", async (req, res) => {
 
 app.put("/menu/:id", async (req, res) => {
     const { id } = req.params;
-    const { menu_name, price, category_id, quantity_id } = req.body;
+    const { menu_name, price, category_id, quantity_id, image_url } = req.body;
 
     const result = await pool.query(
         `UPDATE menu
          SET menu_name = $1,
              price = $2,
              category_id = $3,
-             quantity_id = $4
-         WHERE id = $5
+             quantity_id = $4,
+             image_url = $5
+         WHERE id = $6
          RETURNING *`,
-        [menu_name, price, category_id, quantity_id, id]
+        [menu_name, price, category_id, quantity_id, image_url, id]
     );
 
     res.json(result.rows[0]);

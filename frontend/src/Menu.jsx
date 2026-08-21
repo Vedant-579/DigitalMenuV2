@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import MenuCard from "./MenuCard";
 
 function Menu() {
     const [menu, setMenu] = useState([]);
@@ -14,6 +15,11 @@ function Menu() {
     const [updateId, setUpdateId] = useState("");
 
     const [deleteId, setDeleteId] = useState("");
+
+    //image ural adding
+    const [imageUrl, setImageUrl] = useState("");
+
+    const [selectedCategory, setSelectedCategory] = useState(""); //filter at homepage veg/nonveg etc
 
 
 
@@ -36,6 +42,7 @@ function loadMenu() {
             setPrice(data.price);
             setCategoryId(data.category_id);
             setQuantityId(data.quantity_id);
+            setImageUrl(data.image_url || "");
         });
 }
 
@@ -49,7 +56,8 @@ function updateMenu() {
             menu_name: menuName,
             price: price,
             category_id: categoryId,
-            quantity_id: quantityId
+            quantity_id: quantityId ,
+            image_url: imageUrl
         })
     })
     .then(response => response.json())
@@ -81,7 +89,8 @@ const handleSubmit = (e) => {
             menu_name: menuName,
             price: price,
             category_id: categoryId,
-            quantity_id: quantityId
+            quantity_id: quantityId,
+            image_url: imageUrl
         })
     })
    .then(() => {
@@ -91,6 +100,7 @@ const handleSubmit = (e) => {
     setPrice("");
     setCategoryId("");
     setQuantityId("");
+    setImageUrl("");
 });
 };
     
@@ -132,6 +142,13 @@ const handleSubmit = (e) => {
         value={price}
         onChange={(e) => setPrice(e.target.value)}
     />
+
+    <input
+    type="text"
+    placeholder="Image URL"
+    value={imageUrl}
+    onChange={(e) => setImageUrl(e.target.value)}
+/>
 
    <select
     value={categoryId}
@@ -185,15 +202,31 @@ const handleSubmit = (e) => {
 
             <h1>Menu</h1>
 
-            {menu.map(item => (
-                <div key={item.id}>
-                    <h3>{item.menu_name}</h3>
-                    <p>₹{item.price}</p>
-                    <p>{item.category_name}</p>
-                    <p>{item.size}</p>
-                </div>
-            ))}
+            <select
+    value={selectedCategory}
+    onChange={(e) => setSelectedCategory(e.target.value)}
+>
+    <option value="">All Categories</option>
+
+    {categories.map(category => (
+        <option key={category.id} value={category.category_name}>
+            {category.category_name}
+        </option>
+    ))}
+</select>
+<div className="menu-grid">
+          {menu
+    .filter(item =>
+        selectedCategory === "" ||
+        item.category_name === selectedCategory
+    )
+    .map(item => (
+        <MenuCard key={item.id} item={item} />
+    ))
+}
         </div>
+
+</div>
     );
 }
 

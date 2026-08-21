@@ -182,3 +182,36 @@
     border-right-color: var(--border);
   }
 }
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+.menu-card {
+    width: 250px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    margin: 10px;
+    text-align: center;
+    background: white;
+}
+
+.menu-card img,
+.no-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.menu-card h3 {
+    margin: 12px 0 8px;
+}
+
+.menu-card p {
+    margin: 6px 0;
+}
