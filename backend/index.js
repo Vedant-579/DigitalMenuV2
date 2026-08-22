@@ -103,6 +103,85 @@ app.get("/quantities", async(req, res)=>{
   res.json(result.rows);
 })
 
+app.post("/orders", async (req, res) => {
+    const { customer_name, table_number, items } = req.body;
+
+    const client = await pool.connect();
+
+    try {
+        await client.query("BEGIN");
+
+        let totalAmount = 0;
+
+        // Create the order first with temporary total
+        const orderResult = await client.query(
+            `INSERT INTO orders
+            (customer_name, table_number, total_amount)
+            VALUES ($1, $2, $3)
+            RETURNING *`,
+            [customer_name, table_number, 0]
+        );
+
+        const order = orderResult.rows[0];
+
+        for (const item of items) {
+
+            // Get actual price from database
+            const menuResult = await client.query(
+                `SELECT price
+                 FROM menu
+                 WHERE id = $1`,
+                [item.id]
+            );
+
+            if (menuResult.rows.length === 0) {
+                throw new Error(`Menu item ${item.id} not found`);
+            }
+
+            const actualPrice = menuResult.rows[0].price;
+
+            totalAmount += actualPrice * item.cartQuantity;
+
+            await client.query(
+                `INSERT INTO order_items
+                (order_id, menu_id, quantity, price)
+                VALUES ($1, $2, $3, $4)`,
+                [
+                    order.id,
+                    item.id,
+                    item.cartQuantity,
+                    actualPrice
+                ]
+            );
+        }
+
+        // Update order with calculated total
+        const updatedOrder = await client.query(
+            `UPDATE orders
+             SET total_amount = $1
+             WHERE id = $2
+             RETURNING *`,
+            [totalAmount, order.id]
+        );
+
+        await client.query("COMMIT");
+
+        res.status(201).json(updatedOrder.rows[0]);
+
+    } catch (error) {
+
+        await client.query("ROLLBACK");
+
+        console.error(error);
+
+        res.status(500).json({
+            error: "Failed to create order"
+        });
+
+    } finally {
+        client.release();
+    }
+});
 
 app.listen(3000, () => {
     console.log("Server running on http://localhost:3000");
