@@ -254,3 +254,35 @@
     padding: 8px 14px;
     cursor: pointer;
 }
+
+.order-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    max-width: 500px;
+}
+
+.order-item {
+    margin: 6px 0;
+}
+
+.order-status {
+    padding: 6px 10px;
+    margin: 5px 0 10px;
+    border-radius: 4px;
+}
+
+.order-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 20px auto;
+}
+
+@media (max-width: 700px) {
+    .order-list {
+        grid-template-columns: 1fr;
+    }
+}

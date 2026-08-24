@@ -12,6 +12,36 @@ function AdminOrders() {
             });
     }, []);
 
+   async function updateStatus(id, status) {
+    const response = await fetch(`http://localhost:3000/orders/${id}/status`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            status: status
+        })
+    });
+
+    if (!response.ok) {
+    console.error("Failed to update order status");
+    return;
+}
+
+    const data = await response.json();
+
+    setOrders(
+        orders.map(order =>
+            order.id === id
+                ? {
+                    ...order,
+                    status: data.status
+                }
+                : order
+        )
+    );
+}
+
     const groupedOrders = orders.reduce((acc, currentItem) => {
 
     if (!acc[currentItem.id]) {
@@ -42,9 +72,9 @@ const orderList = Object.values(groupedOrders); //converts our grouped object in
     return (
         <div>
             <h1>Orders</h1>
-
+<div className="order-list">
 {orderList.map(order => (
-    <div key={order.orderId}>
+    <div className="order-card" key={order.orderId}>
 
         <h2>Order #{order.orderId}</h2>
 
@@ -54,18 +84,30 @@ const orderList = Object.values(groupedOrders); //converts our grouped object in
         <h3>Items</h3>
 
         {order.items.map((item, index) => (
-            <p key={index}>
+            <p className="order-item" key={index}>
                 {item.menu_name} × {item.quantity} - ₹{item.price}
             </p>
         ))}
 
         <p>Total: ₹{order.total_amount}</p>
-        <p>Status: {order.status}</p>
+       <p>Status:</p>
+
+<select
+    className="order-status"
+    value={order.status}
+    onChange={(e) => updateStatus(order.orderId, e.target.value)}
+>
+    <option value="Pending">Pending</option>
+    <option value="Preparing">Preparing</option>
+    <option value="Ready">Ready</option>
+    <option value="Completed">Completed</option>
+</select>
 
         <hr />
 
     </div>
 ))}
+</div>
         </div>
     );
 }
