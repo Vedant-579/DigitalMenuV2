@@ -183,6 +183,44 @@ app.post("/orders", async (req, res) => {
     }
 });
 
+app.get("/orders", async (req, res) => {
+
+    try {
+
+        const result = await pool.query(`
+            SELECT
+                orders.id,
+                orders.customer_name,
+                orders.table_number,
+                order_items.quantity,
+                order_items.price,
+                menu.menu_name,
+                orders.total_amount,
+                orders.status,
+                orders.created_at
+            FROM orders
+
+            JOIN order_items
+                ON orders.id = order_items.order_id
+
+            JOIN menu
+                ON order_items.menu_id = menu.id
+
+            ORDER BY orders.id DESC;
+        `);
+
+        res.json(result.rows);
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            error: "Failed to fetch orders"
+        });
+    }
+});
+
 app.listen(3000, () => {
     console.log("Server running on http://localhost:3000");
 });
